@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glorb Animation Editor</title>
+    <!-- Include CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
+    <!-- Include CodeMirror JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
+    <!-- Include the specific mode you want to use (Python) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/python/python.min.js"></script>
+    <!-- Include CodeMirror theme (optional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/theme/material.min.css">
+
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.4.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.4.1/core.js"></script>
+
+    <!-- Script for Three js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js"></script>
+    <style>
+        /* Style for the container */
+        .container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Style for the CodeMirror editor */
+        .CodeMirror {
+            height: 70vh;
+            /* Adjust the height as needed */
+        }
+
+        /* Style for the button */
+        #runButton {
+            margin-bottom: 10px;
+        }
+
+        /* Style for the printouts div */
+        .printouts {
+            height: 30vh;
+            /* Adjust the height as needed */
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Run button -->
+        <button id="runButton" py-click="run_code">Run</button>
+        <!-- CodeMirror Code Editor -->
+        <textarea id="codeEditor" name="codeEditor" class="CodeMirror">
+def update_pixels(i: int) -> str:
+    return f"Hello World {i}"</textarea>
+        <!-- Placeholder div -->
+        <pre class="printouts" id="printouts"></pre>
+    </div>
+
+    <script type="py" src="./main.py" config="./pyscript.json"></script>
+
+    <!-- Initialize CodeMirror -->
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+            lineNumbers: true, // Show line numbers
+            indentUnit: 4,
+            mode: "python", // Set the language mode to Python
+            theme: "material" // Set the theme
+        });
+    </script>
+</body>
+
+</html>
