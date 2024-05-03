@@ -19,6 +19,7 @@
 
     <!-- Script for Three js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.141.0/examples/js/controls/OrbitControls.js"></script>
     <style>
         /* Style for the container */
         .container {
@@ -33,7 +34,7 @@
         }
 
         /* Style for the button */
-        #runButton {
+        .button {
             margin-bottom: 10px;
         }
 
@@ -45,19 +46,33 @@
             box-sizing: border-box;
             padding: 10px;
         }
+
+        #output-container {
+            height: 30vh;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            padding: 10px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <!-- Run button -->
-        <button id="runButton" py-click="run_code">Run</button>
+        <button id="runButton" class="button" py-click="run_code">Run</button>
+        <button id="stopButton" class="button" py-click="stop_code" style="display: none;">Stop</button>
         <!-- CodeMirror Code Editor -->
         <textarea id="codeEditor" name="codeEditor" class="CodeMirror">
+import random
 def update_pixels(i: int) -> str:
-    return f"Hello World {i}"</textarea>
+    return [[random.random() for _ in range(3)] for _ in range(80)]</textarea>
         <!-- Placeholder div -->
-        <pre class="printouts" id="printouts"></pre>
+
+        <div id="output-container">
+            <pre id="printouts"></pre>
+        </div>
     </div>
 
     <script type="py" src="./main.py" config="./pyscript.json"></script>
