@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glorb Animation Editor</title>
+    <title>GLORB Animation Editor</title>
     <!-- Include CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
     <!-- Include CodeMirror JavaScript -->
@@ -21,69 +21,168 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.141.0/examples/js/controls/OrbitControls.js"></script>
     <style>
-        /* Style for the container */
-        .container {
+        body {
+            margin: 0;
             display: flex;
             flex-direction: column;
+            align-items: stretch;
+            justify-content: space-between;
+            height: 100vh;
+            /* Ensure the body takes up at least the full height of the viewport */
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            /* Example background color */
+        }
+
+        header,
+        footer {
+            margin: 0;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            height: 10vh;
+        }
+
+        /* Style for the wrapper */
+        .wrapper {
+            margin: 0;
+            display: flex;
+            flex-flow: row;
+            align-items: stretch;
+            justify-content: space-between;
+            height: 100vh;
+            /* Ensure the body takes up at least the full height of the viewport */
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            /* Example background color */
+        }
+
+        #editor-output-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: space-between;
+            margin: 0;
+        }
+
+
+        #editor-container {
+            flex: 1;
+        }
+
+        #printouts-container {
+            flex: 1;
+            overflow-y: scroll;
+        }
+
+        #three-container {
+            height: 80vh;
         }
 
         /* Style for the CodeMirror editor */
         .CodeMirror {
-            height: 70vh;
+            height: 40vh;
             /* Adjust the height as needed */
         }
 
         /* Style for the button */
         .button {
-            margin-bottom: 10px;
+            padding: 10px;
         }
 
         /* Style for the printouts div */
         .printouts {
-            height: 30vh;
-            /* Adjust the height as needed */
-            border: 1px solid #ccc;
+            height: 40vh;
             box-sizing: border-box;
-            padding: 10px;
         }
 
-        #output-container {
-            height: 30vh;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            padding: 10px;
-            overflow-y: scroll;
-            border: 1px solid #ccc;
+        #c {
+            width: 50vw;
+            height: 80vh;
+            display: block;
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+                /* Revert to column layout for smaller screens */
+                height: auto;
+            }
+
+            #c {
+                width: 100vw;
+                height: 100vw;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <!-- Run button -->
-        <button id="runButton" class="button" py-click="run_code">Run</button>
-        <button id="stopButton" class="button" py-click="stop_code" style="display: none;">Stop</button>
-        <!-- CodeMirror Code Editor -->
-        <textarea id="codeEditor" name="codeEditor" class="CodeMirror">
-import random
-def update_pixels(i: int) -> str:
-    return [[random.random() for _ in range(3)] for _ in range(80)]</textarea>
-        <!-- Placeholder div -->
+    <header>
+        <h1>GLORB Animation Editor</h1>
+    </header>
+    <div class="wrapper">
+        <div id="editor-output-container">
+            <div id="editor-container">
+                <!-- CodeMirror Code Editor -->
+                <textarea id="codeEditor" name="codeEditor" class="CodeMirror"></textarea>
+            </div>
+            <!-- Printouts -->
+            <div id="printouts-container">
+                <pre id="printouts"></pre>
+            </div>
+        </div>
 
-        <div id="output-container">
-            <pre id="printouts"></pre>
+        <div id="three-container">
+            <button id="runButton" class="button" py-click="run_code">Run</button>
+            <button id="stopButton" class="button" py-click="stop_code" style="display: none;">Stop</button>
+            <button id="boilerplate" class="button">Reset boilerplate code</button>
+            <canvas id="c"></canvas>
         </div>
     </div>
+
+    <footer>
+        <small>
+            <div class="disclaimer">
+                <p>If you find any bugs or have other suggestions, please <a
+                        href="https://github.com/mikaeltulldahl/glorb/issues" target="_blank" rel="noopener noreferrer"
+                        style="color: #fff;">create an issue on Github</a></p>
+            </div>
+        </small>
+    </footer>
 
     <script type="py" src="./main.py" config="./pyscript.json"></script>
 
     <!-- Initialize CodeMirror -->
     <script>
+        var boilerplateCode = `import random
+def update_pixels(i: int) -> str:
+    return [[random.random() for _ in range(3)] for _ in range(80)]`;
+
+        var savedCode = localStorage.getItem("savedCode");
+
+        // If there is no saved code, provide some sample code
+        if (!savedCode) {
+            savedCode = boilerplateCode;
+        }
+
         var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
             lineNumbers: true, // Show line numbers
             indentUnit: 4,
             mode: "python", // Set the language mode to Python
             theme: "material" // Set the theme
+        });
+        editor.setValue(savedCode);
+
+        // Save the editor content to local storage whenever it changes
+        editor.on("change", function () {
+            localStorage.setItem("savedCode", editor.getValue());
+        });
+
+        document.getElementById("boilerplate").addEventListener("click", () => {
+            editor.setValue(boilerplateCode);
         });
     </script>
 </body>

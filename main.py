@@ -1,137 +1,92 @@
 import asyncio
+import math
 import sys
 import traceback
 
-from js import THREE, Float32Array, Math, Object, performance
-from pyodide.ffi import to_js
+from js import THREE, Float32Array, Object
+from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
-renderer = THREE.WebGLRenderer.new({"antialias": True})
-renderer.setSize(1000, 1000)
-renderer.shadowMap.enabled = False
-renderer.shadowMap.type = THREE.PCFSoftShadowMap
-renderer.shadowMap.needsUpdate = True
-renderer.setPixelRatio(window.devicePixelRatio)
+canvas = document.querySelector("#c")
+renderer = THREE.WebGLRenderer.new(
+    Object.fromEntries(to_js({"antialias": True, "canvas": canvas}))
+)
 
-document.body.appendChild(renderer.domElement)
+container = document.querySelector("#three-container")
 
-camera = THREE.PerspectiveCamera.new(35, window.innerWidth / window.innerHeight, 1, 500)
+camera = THREE.PerspectiveCamera.new(
+    75, window.innerWidth / window.innerHeight, 0.01, 10
+)
+camera.position.set(0, 0, 2)
+
 scene = THREE.Scene.new()
-cameraRange = 3
-
-camera.aspect = window.innerWidth / window.innerHeight
-camera.updateProjectionMatrix()
-renderer.setSize(window.innerWidth, window.innerHeight)
 
 orbit = THREE.OrbitControls.new(camera, renderer.domElement)
 orbit.enableZoom = False
 
-
-setcolor = "#111111"
-
-scene.background = THREE.Color.new(setcolor)
-scene.fog = THREE.Fog.new(setcolor, 2.5, 3.5)
-
-modularGroup = THREE.Object3D.new()
-
+geometry = THREE.IcosahedronGeometry.new(1, 1)
 perms = {
-    "flatShading": True,
-    "color": "#111111",
-    "transparent": False,
-    "opacity": 1,
-    "wireframe": False,
+    "color": "#FFFFFF",
     "vertexColors": True,
 }
 perms = Object.fromEntries(to_js(perms))
+material = THREE.MeshStandardMaterial.new(perms)
+cube = THREE.Mesh.new(geometry, material)
+scene.add(cube)
+count = geometry.attributes.position.count
+
+geometry.setAttribute(
+    "color", THREE.BufferAttribute.new(Float32Array.new(count * 3), 3)
+)
 
 
-def create_cubes(modularGroup):
-    geometry = THREE.IcosahedronGeometry.new(0.5, 1)
-    material = THREE.MeshStandardMaterial.new(perms)
-    cube = THREE.Mesh.new(geometry, material)
-    cube.speedRotation = Math.random() * 0.1
-    cube.positionX = 0
-    cube.positionY = 0
-    cube.positionZ = 0
-    cube.castShadow = True
-    cube.receiveShadow = True
-    cube.scale.set(1, 1, 1)
-    cube.position.set(cube.positionX, cube.positionY, cube.positionZ)
-    modularGroup.add(cube)
-    count = geometry.attributes.position.count
-
-    geometry.setAttribute(
-        "color", THREE.BufferAttribute.new(Float32Array.new(count * 3), 3)
-    )
-
-    def set_colors_local(colors: list[list[int]]):
-        color = THREE.Color.new()
-        colors1 = geometry.attributes.color
-        count = geometry.attributes.position.count
-        for i in range(int(count / 3)):
-            color.setRGB(colors[i][0], colors[i][1], colors[i][2])
-            colors1.setXYZ(i * 3 + 0, color.r, color.g, color.b)
-            colors1.setXYZ(i * 3 + 1, color.r, color.g, color.b)
-            colors1.setXYZ(i * 3 + 2, color.r, color.g, color.b)
-        colors1.needsUpdate = True
-
-    return set_colors_local
+def set_colors(colors: list[list[int]]):
+    color = THREE.Color.new()
+    colors1 = geometry.attributes.color
+    face_count = int(count / 3)
+    for i in range(face_count):
+        color.setRGB(colors[i][0], colors[i][1], colors[i][2])
+        colors1.setXYZ(i * 3 + 0, color.r, color.g, color.b)
+        colors1.setXYZ(i * 3 + 1, color.r, color.g, color.b)
+        colors1.setXYZ(i * 3 + 2, color.r, color.g, color.b)
+    colors1.needsUpdate = True
 
 
-set_colors = create_cubes(modularGroup)
+ambientLight = THREE.AmbientLight.new()
+scene.add(ambientLight)
 
 
-scene.add(modularGroup)
+def resizeRendererToDisplaySize(renderer):
+    canvas = renderer.domElement
+    pixelRatio = window.devicePixelRatio
+    width = math.floor(canvas.clientWidth * pixelRatio)
+    height = math.floor(canvas.clientHeight * pixelRatio)
+    needResize = canvas.width != width or canvas.height != height
+    if needResize:
+        renderer.setSize(width, height, False)
 
-camera.position.set(0, 0, cameraRange)
-cameraValue = False
-
-ambientLight = THREE.AmbientLight.new(0xFFFFFF, 0.1)
-
-light = THREE.SpotLight.new(0xFFFFFF, 3)
-light.position.set(5, 5, 2)
-light.castShadow = True
-light.shadow.mapSize.width = 10000
-light.shadow.mapSize.height = light.shadow.mapSize.width
-light.penumbra = 0.5
-
-lightBack = THREE.PointLight.new(0x0FFFFF, 1)
-lightBack.position.set(0, -3, -1)
-
-scene.add(light)
+    return needResize
 
 
-light2 = THREE.DirectionalLight.new(0xFFFFFF, 1)
-light2.position.set(-1, 2, 4)
-scene.add(light2)
-
-scene.add(lightBack)
-
-light_ambient = THREE.AmbientLight.new(0x404040)  # soft white light
-scene.add(light_ambient)
-
-rectSize = 2
-intensity = 14
-rectLight = THREE.RectAreaLight.new(0x0FFFFF, intensity, rectSize, rectSize)
-rectLight.position.set(0, 0, 1)
-rectLight.lookAt(0, 0, 0)
-scene.add(rectLight)
-
-raycaster = THREE.Raycaster.new()
-
-time = 0.0003
-camera.lookAt(scene.position)
+code_is_running = False
 
 
-async def render_always():
-    while True:
-        cube = modularGroup.children[0]
+def render(*args):
+    global code_is_running
+
+    if code_is_running:
         cube.rotation.y += 0.003
-        renderer.render(scene, camera)
-        await asyncio.sleep(0.02)
+
+    if resizeRendererToDisplaySize(renderer):
+        canvas = renderer.domElement
+        camera.aspect = canvas.clientWidth / canvas.clientHeight
+        camera.updateProjectionMatrix()
+
+    renderer.render(scene, camera)
+    window.requestAnimationFrame(create_proxy(render))
 
 
-asyncio.ensure_future(render_always())
+render()
 
 stop_event = asyncio.Event()
 
@@ -141,13 +96,14 @@ def stop_code(event):
 
 
 async def run_code(event):
+    global code_is_running
     document.querySelector("#runButton").style.display = "none"
     document.querySelector("#stopButton").style.display = "inline-block"
 
     code_string = window.editor.getValue()
     printouts = document.querySelector("#printouts")
     # printouts.textContent = ""
-    output_container = document.querySelector("#output-container")
+    printouts_container = document.querySelector("#printouts-container")
 
     FUNC_NAME = "update_pixels"
 
@@ -156,7 +112,7 @@ async def run_code(event):
         def write(self, text):
             printouts.textContent += text
             # auto-scroll to the bottom
-            output_container.scrollTop = output_container.scrollHeight
+            printouts_container.scrollTop = printouts_container.scrollHeight
 
     # Redirect stdout to the custom stream
     sys.stdout = CapturePrintouts()
@@ -177,6 +133,7 @@ async def run_code(event):
 
         # Call the 'update' function repeatedly
         i = 0
+        code_is_running = True
         while not stop_event.is_set():
             set_colors(update_pixels_func(i))
             # renderer.render(scene, camera)
@@ -186,6 +143,8 @@ async def run_code(event):
 
     except:
         print(traceback.format_exc())
+
+    code_is_running = False
 
     # Restore the original stdout
     sys.stdout = sys.__stdout__
