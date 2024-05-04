@@ -137,7 +137,9 @@ async def run_code(event):
         while not stop_event.is_set():
             set_colors(update_pixels_func(i))
             # renderer.render(scene, camera)
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(
+                0.001 * int(document.querySelector("#updateRate").value)
+            )
             i += 1
         print("--- STOP EXECUTION ---")
 
