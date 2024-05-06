@@ -16,9 +16,9 @@ renderer = THREE.WebGLRenderer.new(
 container = document.querySelector("#three-container")
 
 camera = THREE.PerspectiveCamera.new(
-    75, window.innerWidth / window.innerHeight, 0.01, 10
+    30, window.innerWidth / window.innerHeight, 0.01, 10
 )
-camera.position.set(0, 0, 2)
+camera.position.set(0, 0, 5)
 
 scene = THREE.Scene.new()
 scene.background = THREE.Color.new(0x263238)
@@ -53,20 +53,19 @@ def set_colors(colors: list[list[int]]):
     colors1.needsUpdate = True
 
 
-ambientLight = THREE.AmbientLight.new()
-scene.add(ambientLight)
+ambient_light = THREE.AmbientLight.new()
+scene.add(ambient_light)
 
 
-def resizeRendererToDisplaySize(renderer):
-    canvas = renderer.domElement
-    pixelRatio = window.devicePixelRatio
-    width = math.floor(canvas.clientWidth * pixelRatio)
-    height = math.floor(canvas.clientHeight * pixelRatio)
-    needResize = canvas.width != width or canvas.height != height
-    if needResize:
+def resize_renderer_to_display_size():
+    pixel_ratio = window.devicePixelRatio
+    width = math.floor(canvas.clientWidth * pixel_ratio)
+    height = math.floor(canvas.clientHeight * pixel_ratio)
+    needs_resize = canvas.width != width or canvas.height != height
+    if needs_resize:
         renderer.setSize(width, height, False)
 
-    return needResize
+    return needs_resize
 
 
 code_is_running = False
@@ -78,8 +77,7 @@ def render(*args):
     if code_is_running:
         cube.rotation.y += 0.003
 
-    if resizeRendererToDisplaySize(renderer):
-        canvas = renderer.domElement
+    if resize_renderer_to_display_size():
         camera.aspect = canvas.clientWidth / canvas.clientHeight
         camera.updateProjectionMatrix()
 
@@ -102,18 +100,20 @@ async def run_code(event):
     document.querySelector("#stopButton").style.display = "inline-block"
 
     code_string = window.editor.getValue()
-    printouts = document.querySelector("#printouts")
-    # printouts.textContent = ""
-    printouts_container = document.querySelector("#printouts-container")
 
     FUNC_NAME = "update_pixels"
 
     # Define a custom stream that captures the output
     class CapturePrintouts:
+
+        def __init__(self) -> None:
+            self.printouts = document.querySelector("#printouts")
+            self.printouts_container = document.querySelector("#printouts-container2")
+
         def write(self, text):
-            printouts.textContent += text
+            self.printouts.textContent += text
             # auto-scroll to the bottom
-            printouts_container.scrollTop = printouts_container.scrollHeight
+            self.printouts_container.scrollTop = self.printouts_container.scrollHeight
 
     # Redirect stdout to the custom stream
     sys.stdout = CapturePrintouts()

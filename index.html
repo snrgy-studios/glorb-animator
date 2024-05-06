@@ -183,7 +183,7 @@
             <button id="formatCode" class="button" py-click="format_code">Format code</button>
             <button id="boilerplate" class="button">Reset boilerplate code</button>
             <label for="updateRate">Update rate [ms]:</label>
-            <input type="text" id="updateRate" value="500" placeholder="Set update rate [ms]">
+            <input type="number" id="updateRate" value="500" min="10" max="10000" placeholder="Set update rate [ms]">
             <canvas id="c"></canvas>
         </div>
     </div>
