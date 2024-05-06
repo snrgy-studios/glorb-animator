@@ -3,6 +3,7 @@ import math
 import sys
 import traceback
 
+from black import FileMode, format_str
 from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
@@ -154,3 +155,9 @@ async def run_code(event):
     stop_event.clear()
     document.querySelector("#runButton").style.display = "inline-block"
     document.querySelector("#stopButton").style.display = "none"
+
+
+def format_code(event):
+    code_string = window.editor.getValue()
+    code_string = format_str(code_string, mode=FileMode())
+    window.editor.setValue(code_string)
