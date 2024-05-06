@@ -21,6 +21,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.141.0/examples/js/controls/OrbitControls.js"></script>
     <style>
+        :root {
+            color-scheme: dark;
+        }
+
         body {
             margin: 0;
             display: flex;
@@ -30,7 +34,7 @@
             height: 100vh;
             /* Ensure the body takes up at least the full height of the viewport */
             font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
+            background-color: #263238;
             /* Example background color */
         }
 
@@ -74,6 +78,7 @@
         #printouts-container {
             flex: 1;
             overflow-y: scroll;
+            background-color: #263238;
         }
 
         #three-container {
@@ -87,14 +92,19 @@
         }
 
         /* Style for the button */
-        .button {
+        .button,
+        label,
+        input {
             padding: 10px;
+            background-color: #263238;
+            color: #EEFFFF;
         }
 
         /* Style for the printouts div */
         .printouts {
             height: 40vh;
             box-sizing: border-box;
+            color: #EEFFFF;
         }
 
         #c {
@@ -151,7 +161,7 @@
             <div class="disclaimer">
                 <p>If you find any bugs or have other suggestions, please <a
                         href="https://github.com/mikaeltulldahl/glorb/issues" target="_blank" rel="noopener noreferrer"
-                        style="color: #fff;">create an issue on Github</a></p>
+                        style="color: #EEFFFF;">create an issue on Github</a></p>
             </div>
         </small>
     </footer>

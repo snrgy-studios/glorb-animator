@@ -21,17 +21,17 @@ camera = THREE.PerspectiveCamera.new(
 camera.position.set(0, 0, 2)
 
 scene = THREE.Scene.new()
+scene.background = THREE.Color.new(0x263238)
 
 orbit = THREE.OrbitControls.new(camera, renderer.domElement)
 orbit.enableZoom = False
 
 geometry = THREE.IcosahedronGeometry.new(1, 1)
 perms = {
-    "color": "#FFFFFF",
     "vertexColors": True,
 }
 perms = Object.fromEntries(to_js(perms))
-material = THREE.MeshStandardMaterial.new(perms)
+material = THREE.MeshBasicMaterial.new(perms)
 cube = THREE.Mesh.new(geometry, material)
 scene.add(cube)
 count = geometry.attributes.position.count
