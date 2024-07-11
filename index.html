@@ -20,6 +20,9 @@
     <!-- Script for Three js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.141.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Script for Art-Net -->
+    <script src="node_modules/artnet/dist/artnet.min.js"></script>
     <style>
         :root {
             color-scheme: dark;
@@ -184,6 +187,8 @@
             <button id="boilerplate" class="button">Reset boilerplate code</button>
             <label for="updateRate">Update rate [ms]:</label>
             <input type="number" id="updateRate" value="500" min="10" max="10000" placeholder="Set update rate [ms]">
+            <label><input id="shouldSendDmx" type="checkbox" />Send DMX to <input type="text" id="dmxUrl"
+                    value="glorb.local" placeholder="URL"></label>
             <canvas id="c"></canvas>
         </div>
     </div>
@@ -229,6 +234,41 @@ def update_pixels(i: int) -> str:
         document.getElementById("boilerplate").addEventListener("click", () => {
             editor.setValue(boilerplateCode);
         });
+
+
+
+
+
+
+        var artnet = null;
+        function startDmx() {
+            let should_send_dmx = document.getElementById("shouldSendDmx").checked
+            if (should_send_dmx) {
+                let dmx_url = document.getElementById("dmxUrl").value
+                let options = {
+                    host: dmx_url
+                }
+                // https://github.com/hobbyquaker/artnet
+                artnet = require('artnet')(options);
+
+                // set channel 1 to 255 and disconnect afterwards.
+                artnet.set(1, 255, function (err, res) {
+                    artnet.close();
+                });
+            }
+
+        }
+
+        function sendDmx(pixelData) {
+            artnet.set(1, pixelData);
+        }
+
+        function stopDmx() {
+            artnet.close();
+            artnet = null;
+        }
+
+
     </script>
 </body>
 

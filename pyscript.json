@@ -3,6 +3,7 @@
         "numpy",
         "scipy",
         "pandas",
-        "black"
+        "black",
+        "sacn"
     ]
 }

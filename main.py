@@ -1,8 +1,10 @@
 import asyncio
+import itertools
 import math
 import sys
 import traceback
 
+import sacn
 from black import FileMode, format_str
 from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
@@ -87,6 +89,10 @@ def render(*args):
 
 render()
 
+# DMX pixel streaming
+# provide an IP-Address to bind to if you want to send multicast packets from a specific interface
+sender = sacn.sACNsender()
+
 stop_event = asyncio.Event()
 
 
@@ -117,6 +123,22 @@ async def run_code(event):
 
     # Redirect stdout to the custom stream
     sys.stdout = CapturePrintouts()
+
+    send_dmx = document.querySelector("#sendDmx").checked
+    print(f"send_dmx: {send_dmx}")
+    if send_dmx:
+        try:
+            dmx_url = document.querySelector("#dmxUrl").value
+            print(f"dmx_url: {dmx_url}")
+
+            sender.start()  # start the sending thread
+            sender.activate_output(1)  # start sending out data in the 1st universe
+            sender[1].multicast = False
+
+            sender[1].destination = dmx_url
+        except:
+            print(traceback.format_exc())
+
     try:
         # Create a separate namespace for the executed code
         namespace = {}
@@ -136,7 +158,11 @@ async def run_code(event):
         i = 0
         code_is_running = True
         while not stop_event.is_set():
-            set_colors(update_pixels_func(i))
+            pixel_data = update_pixels_func(i)
+            set_colors(pixel_data)
+
+            pixel_data_as_tuple = tuple(itertools.chain(*pixel_data))
+            sender[1].dmx_data = pixel_data_as_tuple
             # renderer.render(scene, camera)
             await asyncio.sleep(
                 0.001 * int(document.querySelector("#updateRate").value)
@@ -148,6 +174,7 @@ async def run_code(event):
         print(traceback.format_exc())
 
     code_is_running = False
+    sender.stop()  # do not forget to stop the sender
 
     # Restore the original stdout
     sys.stdout = sys.__stdout__
