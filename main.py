@@ -40,6 +40,16 @@ geometry.setAttribute(
     "color", THREE.BufferAttribute.new(Float32Array.new(count * 3), 3)
 )
 
+# Add wireframe to accentuate faces
+wire_geometry = THREE.WireframeGeometry.new(cube.geometry)
+wire_material = THREE.LineBasicMaterial.new(Object.fromEntries(to_js({
+    "color": 0x333333,
+    "opacity": 0.75,
+    "transparent": True,
+})))
+wireframe = THREE.LineSegments.new(wire_geometry, wire_material)
+cube.add(wireframe)  # Wireframe will automatically rotate with its parent
+
 
 # Remap geometry faces to corresponding LED:s of the GLORB lamp
 FACE_MAP = (63, 22, 6, 3, 24, 60, 61, 62, 23, 21, 20, 7, 5, 4, 0, 1, 2, 26, 25, 27, 46, 43, 41, 42, 59, 76, 77, 79, 38, 10, 9, 8, 12, 16, 17, 19, 28, 67, 65, 66, 45, 44, 40, 56, 57, 58, 78, 39, 37, 36, 11, 14, 13, 15, 18, 30, 29, 31, 64, 47, 49, 48, 52, 53, 55, 72, 73, 75, 34, 33, 32, 71, 69, 70, 50, 51, 54, 74, 35, 68)
