@@ -219,7 +219,17 @@ def update_pixels(i: int) -> str:
             mode: "python", // Set the language mode to Python
             theme: "material" // Set the theme
         });
+
         editor.setValue(savedCode);
+
+        // Replace tab with 4 spaces to prevent IndentationError
+        editor.on("keydown", (cm, event) => {
+            if (event.key === "Tab") {
+                event.preventDefault();
+                const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+                cm.replaceSelection(spaces, "end", "+input");
+            }
+        });
 
         // Save the editor content to local storage whenever it changes
         editor.on("change", function () {
