@@ -22,6 +22,7 @@ def test_can_convert_color_to_rgb_percentages_from_floats(color: list[float], ex
     pytest.param([0, 0, 0], [0.0, 0.0, 0.0], id="black"),
     pytest.param([255, 255, 255], [1.0, 1.0, 1.0], id="white"),
     pytest.param([255, 0, 0], [1.0, 0.0, 0.0], id="red"),
+    pytest.param([255, 128, 0], [1.0, 0.5019607843137255, 0.0], id="orange"),
     pytest.param([256, 0, 0], [256, 0, 0], id="> 255"),
     pytest.param([1, 1, 1], [1/255, 1/255, 1/255], id="ones"),
 ])
