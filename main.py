@@ -8,7 +8,8 @@ from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
-from utils import to_rgb
+from utils import set_colors
+
 
 canvas = document.querySelector("#c")
 renderer = THREE.WebGLRenderer.new(
@@ -51,23 +52,6 @@ wire_material = THREE.LineBasicMaterial.new(Object.fromEntries(to_js({
 })))
 wireframe = THREE.LineSegments.new(wire_geometry, wire_material)
 cube.add(wireframe)  # Wireframe will automatically rotate with its parent
-
-
-# Remap geometry faces to corresponding LED:s of the GLORB lamp
-FACE_MAP = (63, 22, 6, 3, 24, 60, 61, 62, 23, 21, 20, 7, 5, 4, 0, 1, 2, 26, 25, 27, 46, 43, 41, 42, 59, 76, 77, 79, 38, 10, 9, 8, 12, 16, 17, 19, 28, 67, 65, 66, 45, 44, 40, 56, 57, 58, 78, 39, 37, 36, 11, 14, 13, 15, 18, 30, 29, 31, 64, 47, 49, 48, 52, 53, 55, 72, 73, 75, 34, 33, 32, 71, 69, 70, 50, 51, 54, 74, 35, 68)
-
-
-def set_colors(colors: list[list[int]]):
-    color = THREE.Color.new()
-    colors1 = geometry.attributes.color
-    face_count = int(count / 3)
-    for i in range(face_count):
-        color.setRGB(*to_rgb(colors[i]))
-        colors1.setXYZ(FACE_MAP[i] * 3 + 0, color.r, color.g, color.b)
-        colors1.setXYZ(FACE_MAP[i] * 3 + 1, color.r, color.g, color.b)
-        colors1.setXYZ(FACE_MAP[i] * 3 + 2, color.r, color.g, color.b)
-    colors1.needsUpdate = True
-
 
 ambient_light = THREE.AmbientLight.new()
 scene.add(ambient_light)
@@ -152,7 +136,7 @@ async def run_code(event):
         i = 0
         code_is_running = True
         while not stop_event.is_set():
-            set_colors(update_pixels_func(i))
+            set_colors(update_pixels_func(i), THREE.Color.new(), geometry)
             # renderer.render(scene, camera)
             await asyncio.sleep(
                 0.001 * int(document.querySelector("#updateRate").value)
