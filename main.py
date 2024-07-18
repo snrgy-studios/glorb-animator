@@ -8,6 +8,8 @@ from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
+from utils import to_rgb
+
 canvas = document.querySelector("#c")
 renderer = THREE.WebGLRenderer.new(
     Object.fromEntries(to_js({"antialias": True, "canvas": canvas}))
@@ -60,7 +62,7 @@ def set_colors(colors: list[list[int]]):
     colors1 = geometry.attributes.color
     face_count = int(count / 3)
     for i in range(face_count):
-        color.setRGB(colors[i][0], colors[i][1], colors[i][2])
+        color.setRGB(*to_rgb(colors[i]))
         colors1.setXYZ(FACE_MAP[i] * 3 + 0, color.r, color.g, color.b)
         colors1.setXYZ(FACE_MAP[i] * 3 + 1, color.r, color.g, color.b)
         colors1.setXYZ(FACE_MAP[i] * 3 + 2, color.r, color.g, color.b)
