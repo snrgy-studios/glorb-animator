@@ -4,5 +4,8 @@
         "scipy",
         "pandas",
         "black"
-    ]
+        ],
+    "files": {
+        "./utils.py": "utils.py"
+    }
 }
