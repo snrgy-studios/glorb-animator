@@ -115,6 +115,10 @@ async def run_code(event):
             # auto-scroll to the bottom
             self.printouts_container.scrollTop = self.printouts_container.scrollHeight
 
+        def flush(self):
+            ...
+
+
     # Redirect stdout to the custom stream
     sys.stdout = CapturePrintouts()
     try:
