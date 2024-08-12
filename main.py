@@ -76,8 +76,7 @@ code_is_running = False
 def render(*args):
     global code_is_running
 
-    if code_is_running:
-        cube.rotation.y += 0.003
+    if code_is_running and not pause_event.is_set():
 
     if resize_renderer_to_display_size():
         camera.aspect = canvas.clientWidth / canvas.clientHeight
@@ -90,16 +89,25 @@ def render(*args):
 render()
 
 stop_event = asyncio.Event()
-
+pause_event = asyncio.Event()
 
 def stop_code(event):
     stop_event.set()
+
+def pause_code(event):
+    if pause_event.is_set():
+        document.querySelector("#pauseButton").textContent = "Pause"
+        pause_event.clear()
+    else:
+        document.querySelector("#pauseButton").textContent = "Resume"
+        pause_event.set()
 
 
 async def run_code(event):
     global code_is_running
     document.querySelector("#runButton").style.display = "none"
     document.querySelector("#stopButton").style.display = "inline-block"
+    document.querySelector("#pauseButton").style.display = "inline-block"
 
     code_string = window.editor.getValue()
 
@@ -143,6 +151,11 @@ async def run_code(event):
         glorb = Glorb()
         code_is_running = True
         while not stop_event.is_set():
+            if pause_event.is_set():
+                await asyncio.sleep(
+                0.001 * (int(document.querySelector("#updateRate").value) if glorb.update_rate is None else glorb.update_rate)
+            )
+                continue
             glorb = update_pixels_func(i, glorb)
             set_colors(glorb.colors, THREE.Color.new(), geometry)
             # renderer.render(scene, camera)
@@ -159,10 +172,11 @@ async def run_code(event):
 
     # Restore the original stdout
     sys.stdout = sys.__stdout__
-
+    pause_event.clear()
     stop_event.clear()
     document.querySelector("#runButton").style.display = "inline-block"
     document.querySelector("#stopButton").style.display = "none"
+    document.querySelector("#pauseButton").style.display = "none"
 
 
 def format_code(event):
