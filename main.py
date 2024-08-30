@@ -8,7 +8,7 @@ from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
-from utils import Glorb, set_colors
+from utils import Glorb, _set_colors, set_colors
 
 # from utils import GlorbThreeJs as Glorb, set_colors
 
@@ -94,6 +94,9 @@ pause_event = asyncio.Event()
 light_on_event = asyncio.Event()
 
 
+glorb = Glorb(geometry)
+
+
 def toggle_pause_button():
     if pause_event.is_set():
         reset_pause_button()
@@ -126,13 +129,20 @@ def toggle_light_button():
 
 
 def turn_on_light():
-    set_colors(Glorb.on_colors(), THREE.Color.new(), geometry)
+    global glorb
+    if glorb.colors == Glorb.get_off_colors():
+        glorb.set_colors(Glorb.get_on_colors())
+    set_colors(glorb)
+    set_light_button_on()
+
+
+def set_light_button_on():
     light_on_event.set()
     document.querySelector("#resetButton").textContent = "Turn off"
 
 
 def turn_off_light():
-    set_colors(Glorb.off_colors(), THREE.Color.new(), geometry)
+    _set_colors(Glorb.get_off_colors(), geometry)
     light_on_event.clear()
     document.querySelector("#resetButton").textContent = "Turn on"
 
@@ -142,7 +152,8 @@ def reset_colors(event):
 
 
 async def run_code(event):
-    global code_is_running
+    global code_is_running, glorb
+
     document.querySelector("#runButton").style.display = "none"
     document.querySelector("#resetButton").style.display = "none"
     document.querySelector("#stopButton").style.display = "inline-block"
@@ -188,14 +199,14 @@ async def run_code(event):
 
         # Call the 'update' function repeatedly
         i = 0
-        glorb = Glorb(geometry)
         code_is_running = True
+        light_on_event.set()
         while not stop_event.is_set():
             if pause_event.is_set():
                 await asyncio.sleep(0.001)  # Short sleep, omit to increment i
                 continue
             glorb = update_pixels_func(i, glorb)
-            set_colors(glorb.colors, THREE.Color.new(), glorb._geometry)
+            set_colors(glorb)
             # renderer.render(scene, camera)
             await asyncio.sleep(
                 10 / 1000
@@ -212,7 +223,9 @@ async def run_code(event):
     # Restore the original stdout
     sys.stdout = sys.__stdout__
     reset_pause_button()
+    set_light_button_on()
     stop_event.clear()
+
     document.querySelector("#runButton").style.display = "inline-block"
     document.querySelector("#resetButton").style.display = "inline-block"
     document.querySelector("#stopButton").style.display = "none"
