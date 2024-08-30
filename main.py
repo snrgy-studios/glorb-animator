@@ -214,7 +214,7 @@ async def run_code(event):
             set_colors(glorb)
             # renderer.render(scene, camera)
             await asyncio.sleep(
-                10 / 1000
+                0.001 * (100 if glorb.update_rate is None or glorb.update_rate < 10 else glorb.update_rate)
                 # 0.001 * (int(document.querySelector("#updateRate").value) if glorb.update_rate is None else glorb.update_rate)
             )
             i += 1

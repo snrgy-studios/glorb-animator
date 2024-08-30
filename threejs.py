@@ -15,6 +15,8 @@ class GLORBThreeJS(GLORBBase):
         self._update_rate = None
         self._geometry = geometry
         self._geometry_position: 'BufferAttribute' = self._geometry.getAttribute('position')
+        self._centroids = get_centroids()
+        self._centroids_spherical = [to_spherical(*centroid) for centroid in self._centroids]
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -43,6 +45,14 @@ class GLORBThreeJS(GLORBBase):
     # TODO: Irrelevant for this class?
     def get_default_geometry(self) -> tuple[GeometryData, GeometryData, GeometryData, GeometryData]:
         return [], [], [], []
+
+    @property
+    def update_rate(self) -> int | None:
+        return self._update_rate
+
+    @update_rate.setter
+    def update_rate(self, rate: int) -> int | None:
+        self._update_rate = int(rate) if rate >= 10 else None
 
     @property
     def geometry(self) -> 'IcosahedronGeometry':
