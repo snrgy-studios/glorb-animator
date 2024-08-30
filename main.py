@@ -1,4 +1,5 @@
 import asyncio
+from functools import cache
 import math
 import sys
 import traceback
@@ -94,7 +95,9 @@ pause_event = asyncio.Event()
 light_on_event = asyncio.Event()
 
 
-glorb = Glorb(geometry)
+@cache
+def get_glorb():
+    return Glorb(geometry)
 
 
 def toggle_pause_button():
@@ -129,7 +132,7 @@ def toggle_light_button():
 
 
 def turn_on_light():
-    global glorb
+    glorb = get_glorb()
     if glorb.colors == Glorb.get_off_colors():
         glorb.set_colors(Glorb.get_on_colors())
     set_colors(glorb)
@@ -152,7 +155,7 @@ def reset_colors(event):
 
 
 async def run_code(event):
-    global code_is_running, glorb
+    global code_is_running
 
     document.querySelector("#runButton").style.display = "none"
     document.querySelector("#resetButton").style.display = "none"
@@ -201,6 +204,8 @@ async def run_code(event):
         i = 0
         code_is_running = True
         light_on_event.set()
+        glorb = get_glorb()
+
         while not stop_event.is_set():
             if pause_event.is_set():
                 await asyncio.sleep(0.001)  # Short sleep, omit to increment i
