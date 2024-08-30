@@ -91,6 +91,7 @@ render()
 
 stop_event = asyncio.Event()
 pause_event = asyncio.Event()
+light_on_event = asyncio.Event()
 
 
 def toggle_pause_button():
@@ -117,9 +118,33 @@ def pause_code(event):
     toggle_pause_button()
 
 
+def toggle_light_button():
+    if light_on_event.is_set():
+        turn_off_light()
+    else:
+        turn_on_light()
+
+
+def turn_on_light():
+    set_colors(Glorb.on_colors(), THREE.Color.new(), geometry)
+    light_on_event.set()
+    document.querySelector("#resetButton").textContent = "Turn off"
+
+
+def turn_off_light():
+    set_colors(Glorb.off_colors(), THREE.Color.new(), geometry)
+    light_on_event.clear()
+    document.querySelector("#resetButton").textContent = "Turn on"
+
+
+def reset_colors(event):
+    toggle_light_button()
+
+
 async def run_code(event):
     global code_is_running
     document.querySelector("#runButton").style.display = "none"
+    document.querySelector("#resetButton").style.display = "none"
     document.querySelector("#stopButton").style.display = "inline-block"
     document.querySelector("#pauseButton").style.display = "inline-block"
 
@@ -170,10 +195,11 @@ async def run_code(event):
                 await asyncio.sleep(0.001)  # Short sleep, omit to increment i
                 continue
             glorb = update_pixels_func(i, glorb)
-            set_colors(glorb.colors, THREE.Color.new(), geometry)
+            set_colors(glorb.colors, THREE.Color.new(), glorb._geometry)
             # renderer.render(scene, camera)
             await asyncio.sleep(
-                0.001 * (int(document.querySelector("#updateRate").value) if glorb.update_rate is None else glorb.update_rate)
+                10 / 1000
+                # 0.001 * (int(document.querySelector("#updateRate").value) if glorb.update_rate is None else glorb.update_rate)
             )
             i += 1
         print("--- STOP EXECUTION ---")
@@ -188,6 +214,7 @@ async def run_code(event):
     reset_pause_button()
     stop_event.clear()
     document.querySelector("#runButton").style.display = "inline-block"
+    document.querySelector("#resetButton").style.display = "inline-block"
     document.querySelector("#stopButton").style.display = "none"
     document.querySelector("#pauseButton").style.display = "none"
 

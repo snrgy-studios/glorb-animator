@@ -39,7 +39,7 @@ def to_rgb(color) -> int | list[int | float] | tuple[float | int]:
 
 def set_colors(colors: list[list[int | float]], color: Color, geometry: IcosahedronGeometry):
     colors1 = geometry.attributes.color
-    # for index, new_color in zip(FACE_MAP, colors):
+    # for index, new_color in zip(FACE_MAP, colors):  # If colors are unmapped
     for index, new_color in enumerate(colors):
         color.setRGB(*to_rgb(new_color))
         for j in range(3):

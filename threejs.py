@@ -11,7 +11,7 @@ class GlorbThreeJs(GlorbBaseClass):
 
     def __init__(self, geometry: 'IcosahedronGeometry', *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._colors = [[0, 0, 0] for _ in range(self.NUM_FACES)]  # Start with all LED:s off
+        self._colors = self.off_colors  # Start with all LED:s off
         self._update_rate = None
         self._geometry = geometry
         self._geometry_position: 'BufferAttribute' = self._geometry.getAttribute('position')
@@ -22,6 +22,17 @@ class GlorbThreeJs(GlorbBaseClass):
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(colors={self._colors[0]}...{self._colors[-1]})'
 
+    @classmethod
+    def off_colors(self) -> Colors:
+        return [[0, 0, 0] for _ in range(self.NUM_FACES)]
+
+    @classmethod
+    def on_colors(self) -> Colors:
+        return [[255, 255, 255] for _ in range(self.NUM_FACES)]
+
+    def turn_off(self):
+        self._colors = [[0, 0, 0] for _ in range(self.NUM_FACES)]
+
     # TODO: Irrelevant for this class?
     def get_default_geometry(self) -> tuple[GeometryData, GeometryData, GeometryData, GeometryData]:
         return [], [], [], []
@@ -29,6 +40,7 @@ class GlorbThreeJs(GlorbBaseClass):
     @property
     def colors(self) -> list[list[PointValue]]:
         result = [*self._colors]
+        return result
         for i in range(self.NUM_FACES):
             result[self.FACEMAP[i]] = self._colors[i]
         return result
