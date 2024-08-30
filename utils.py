@@ -40,7 +40,7 @@ def to_rgb(color) -> int | list[int | float] | tuple[float | int]:
 def _set_colors(colors: Colors, geometry: 'IcosahedronGeometry') -> None:
     color = THREE.Color.new()
     colors1 = geometry.attributes.color
-    for index, new_color in enumerate(colors):
+    for index, new_color in enumerate(GLORB.map_colors(colors)):
         color.setRGB(*to_rgb(new_color))
         for j in range(3):
             colors1.setXYZ(index * 3 + j, color.r, color.g, color.b)
@@ -50,8 +50,7 @@ def _set_colors(colors: Colors, geometry: 'IcosahedronGeometry') -> None:
 def set_colors(glorb: GLORB) -> None:
     color = THREE.Color.new()
     colors1 = glorb.geometry.attributes.color
-    # for index, new_color in zip(FACE_MAP, colors):  # If colors are unmapped
-    for index, new_color in enumerate(glorb.colors):
+    for index, new_color in enumerate(glorb.colors_mapped):
         color.setRGB(*to_rgb(new_color))
         for j in range(3):
             colors1.setXYZ(index * 3 + j, color.r, color.g, color.b)

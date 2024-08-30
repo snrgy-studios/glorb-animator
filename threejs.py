@@ -30,6 +30,13 @@ class GLORBThreeJS(GLORBBase):
     def get_on_colors(self) -> Colors:
         return [[255, 255, 255] for _ in range(self.NUM_FACES)]
 
+    @classmethod
+    def map_colors(cls, colors: Colors) -> Colors:
+        result = [*colors]
+        for i in range(cls.NUM_FACES):
+            result[cls.FACEMAP[i]] = colors[i]
+        return result
+
     def turn_off(self):
         self._colors = [[0, 0, 0] for _ in range(self.NUM_FACES)]
 
@@ -47,10 +54,7 @@ class GLORBThreeJS(GLORBBase):
 
     @property
     def colors_mapped(self) -> dict[int, list[PointValue]]:
-        result = [*self._colors]
-        for i in range(self.NUM_FACES):
-            result[self.FACEMAP[i]] = self._colors[i]
-        return result
+        return self.map_colors(self._colors)
 
     @colors.setter
     def colors(self, colors) -> list[list[PointValue]]:
