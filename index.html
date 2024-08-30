@@ -204,8 +204,10 @@
     <!-- Initialize CodeMirror -->
     <script>
         var boilerplateCode = `import random
-def update_pixels(i: int) -> str:
-    return [[random.random() for _ in range(3)] for _ in range(80)]`;
+def update_pixels(i: int, glorb) -> str:
+    colors = [[random.random() for _ in range(3)] for _ in range(80)]
+    glorb.set_colors(colors)
+    return glorb`;
 
         var savedCode = localStorage.getItem("savedCode");
 

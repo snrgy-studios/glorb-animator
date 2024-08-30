@@ -1,7 +1,29 @@
-from js.THREE import Color, IcosahedronGeometry
+from pyodide.ffi import to_js # type: ignore
+from js import console # type: ignore
+from js.THREE import Color, IcosahedronGeometry # type: ignore
+import js.THREE as THREE # type: ignore
+
+# _Color = tuple[int | float, int | float, int | float] | list[int | float]
+# Colors = list[_Color] | tuple[_Color, ...]
 
 
-FACE_MAP = (63, 22, 6, 3, 24, 60, 61, 62, 23, 21, 20, 7, 5, 4, 0, 1, 2, 26, 25, 27, 46, 43, 41, 42, 59, 76, 77, 79, 38, 10, 9, 8, 12, 16, 17, 19, 28, 67, 65, 66, 45, 44, 40, 56, 57, 58, 78, 39, 37, 36, 11, 14, 13, 15, 18, 30, 29, 31, 64, 47, 49, 48, 52, 53, 55, 72, 73, 75, 34, 33, 32, 71, 69, 70, 50, 51, 54, 74, 35, 68)
+# # Type alias for LEDMAP and FACEMAP to ensure that they are tuples of exactly 80 integers
+# Map = tuple[int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int]
+# PointValue = int | float
+# GeometryPoint = list[PointValue, PointValue, PointValue]
+# GeometryData = list[GeometryPoint]
+# _Color = tuple[PointValue, PointValue, PointValue] | list[PointValue]
+# Colors = list[_Color]
+
+Map = tuple[int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int]
+PointValue = int | float
+GeometryPoint = list[PointValue, PointValue, PointValue]
+GeometryData = list[GeometryPoint]
+RGBColor = tuple[PointValue, PointValue, PointValue] | list[PointValue]
+Colors = list[RGBColor]
+
+
+from threejs import GlorbThreeJs as Glorb
 
 
 def to_rgb(color) -> int | list[int | float] | tuple[float | int]:
@@ -15,9 +37,10 @@ def to_rgb(color) -> int | list[int | float] | tuple[float | int]:
     return color
 
 
-def set_colors(colors: list[list[int]], color: Color, geometry: IcosahedronGeometry):
+def set_colors(colors: list[list[int | float]], color: Color, geometry: IcosahedronGeometry):
     colors1 = geometry.attributes.color
-    for index, new_color in zip(FACE_MAP, colors):
+    # for index, new_color in zip(FACE_MAP, colors):
+    for index, new_color in enumerate(colors):
         color.setRGB(*to_rgb(new_color))
         for j in range(3):
             colors1.setXYZ(index * 3 + j, color.r, color.g, color.b)

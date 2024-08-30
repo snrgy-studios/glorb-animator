@@ -1,0 +1,13 @@
+
+class IcosahedronGeometry:
+    def __init__(self, radius: float, detail: int) -> None: ...
+    def getAttribute(self, attribute_name: str) -> BufferAttribute: ...
+
+
+class Vector3:
+    def new() -> 'Vector3': ...
+    def fromBufferAttribute(self, attribute: BufferAttribute, index: int) -> Vector3: ...
+
+
+class BufferAttribute:
+    pass

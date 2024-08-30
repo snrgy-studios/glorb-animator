@@ -4,8 +4,13 @@
         "scipy",
         "pandas",
         "black"
-        ],
+    ],
     "files": {
-        "./utils.py": "utils.py"
+        "./utils.py": "utils.py",
+        "./glorb_utils/hello.py": "hello.py",
+        "./__init__.py": "__init__.py",
+        "./gtypes.py": "gtypes.py",
+        "./threejs.py": "threejs.py",
+        "./threejs_stubs.pyi": "threejs_stubs.pyi"
     }
 }

@@ -8,9 +8,9 @@ from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
-from utils import set_colors
+from utils import Glorb, set_colors
 
-from utils import GlorbThreeJs as Glorb, set_colors
+# from utils import GlorbThreeJs as Glorb, set_colors
 
 
 canvas = document.querySelector("#c")
@@ -77,6 +77,7 @@ def render(*args):
     global code_is_running
 
     if code_is_running and not pause_event.is_set():
+        cube.rotation.y += 0.01
 
     if resize_renderer_to_display_size():
         camera.aspect = canvas.clientWidth / canvas.clientHeight
@@ -91,16 +92,29 @@ render()
 stop_event = asyncio.Event()
 pause_event = asyncio.Event()
 
+
+def toggle_pause_button():
+    if pause_event.is_set():
+        reset_pause_button()
+    else:
+        set_pause_button()
+
+
+def reset_pause_button():
+    pause_event.clear()
+    document.querySelector("#pauseButton").textContent = "Pause"
+
+def set_pause_button():
+    pause_event.set()
+    document.querySelector("#pauseButton").textContent = "Resume"
+
+
 def stop_code(event):
     stop_event.set()
 
+
 def pause_code(event):
-    if pause_event.is_set():
-        document.querySelector("#pauseButton").textContent = "Pause"
-        pause_event.clear()
-    else:
-        document.querySelector("#pauseButton").textContent = "Resume"
-        pause_event.set()
+    toggle_pause_button()
 
 
 async def run_code(event):
@@ -131,6 +145,7 @@ async def run_code(event):
 
     # Redirect stdout to the custom stream
     sys.stdout = CapturePrintouts()
+
     try:
         # Create a separate namespace for the executed code
         namespace = {}
@@ -148,19 +163,17 @@ async def run_code(event):
 
         # Call the 'update' function repeatedly
         i = 0
-        glorb = Glorb()
+        glorb = Glorb(geometry)
         code_is_running = True
         while not stop_event.is_set():
             if pause_event.is_set():
-                await asyncio.sleep(
-                0.001 * (int(document.querySelector("#updateRate").value) if glorb.update_rate is None else glorb.update_rate)
-            )
+                await asyncio.sleep(0.001)  # Short sleep, omit to increment i
                 continue
             glorb = update_pixels_func(i, glorb)
             set_colors(glorb.colors, THREE.Color.new(), geometry)
             # renderer.render(scene, camera)
             await asyncio.sleep(
-                0.001 * int(document.querySelector("#updateRate").value)
+                0.001 * (int(document.querySelector("#updateRate").value) if glorb.update_rate is None else glorb.update_rate)
             )
             i += 1
         print("--- STOP EXECUTION ---")
@@ -172,7 +185,7 @@ async def run_code(event):
 
     # Restore the original stdout
     sys.stdout = sys.__stdout__
-    pause_event.clear()
+    reset_pause_button()
     stop_event.clear()
     document.querySelector("#runButton").style.display = "inline-block"
     document.querySelector("#stopButton").style.display = "none"
