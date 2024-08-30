@@ -23,7 +23,7 @@ RGBColor = tuple[PointValue, PointValue, PointValue] | list[PointValue]
 Colors = list[RGBColor]
 
 
-from threejs import GlorbThreeJs as Glorb
+from threejs import GLORBThreeJS as GLORB
 
 
 def to_rgb(color) -> int | list[int | float] | tuple[float | int]:
@@ -47,7 +47,7 @@ def _set_colors(colors: Colors, geometry: 'IcosahedronGeometry') -> None:
     colors1.needsUpdate = True
 
 
-def set_colors(glorb: Glorb) -> None:
+def set_colors(glorb: GLORB) -> None:
     color = THREE.Color.new()
     colors1 = glorb.geometry.attributes.color
     # for index, new_color in zip(FACE_MAP, colors):  # If colors are unmapped

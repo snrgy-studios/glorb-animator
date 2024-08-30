@@ -1,12 +1,12 @@
-from __init__ import GlorbBaseClass, to_spherical
+from __init__ import GLORBBase, to_spherical
 from gtypes import BufferAttribute, Color, Colors, GeometryData, IcosahedronGeometry, PointValue, Vector3
 from js import THREE  # type: ignore
 
 
-class GlorbThreeJs(GlorbBaseClass):
+class GLORBThreeJS(GLORBBase):
     """Glorb class to represent icosahedron of detail 1 in THREE.js."""
 
-    NUM_FACES = GlorbBaseClass.NUM_FACES
+    NUM_FACES = GLORBBase.NUM_FACES
     FACEMAP = (63, 22, 6, 3, 24, 60, 61, 62, 23, 21, 20, 7, 5, 4, 0, 1, 2, 26, 25, 27, 46, 43, 41, 42, 59, 76, 77, 79, 38, 10, 9, 8, 12, 16, 17, 19, 28, 67, 65, 66, 45, 44, 40, 56, 57, 58, 78, 39, 37, 36, 11, 14, 13, 15, 18, 30, 29, 31, 64, 47, 49, 48, 52, 53, 55, 72, 73, 75, 34, 33, 32, 71, 69, 70, 50, 51, 54, 74, 35, 68)
 
     def __init__(self, geometry: 'IcosahedronGeometry', *args, **kwargs):
@@ -91,7 +91,7 @@ class GlorbThreeJs(GlorbBaseClass):
         return not cls.is_even_cycle(iteration_count)
 
     @classmethod
-    def cycle_iteration(cls, iteration_count: int, cycle_size: int = GlorbBaseClass.NUM_FACES) -> int:
+    def cycle_iteration(cls, iteration_count: int, cycle_size: int = GLORBBase.NUM_FACES) -> int:
         """Set current iteration count to loop after <cycle_size> iterations."""
         return iteration_count % cycle_size
 

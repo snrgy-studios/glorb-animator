@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from gtypes import Map
 
 
-class GlorbBaseClass(ABC):
+class GLORBBase(ABC):
     """Glorb base class."""
 
     # Number of faces and LED:s is constant between sub classes

@@ -9,7 +9,7 @@ from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
-from utils import Glorb, _set_colors, set_colors
+from utils import GLORB, _set_colors, set_colors
 
 # from utils import GlorbThreeJs as Glorb, set_colors
 
@@ -97,7 +97,7 @@ light_on_event = asyncio.Event()
 
 @cache
 def get_glorb():
-    return Glorb(geometry)
+    return GLORB(geometry)
 
 
 def toggle_pause_button():
@@ -133,8 +133,8 @@ def toggle_light_button():
 
 def turn_on_light():
     glorb = get_glorb()
-    if glorb.colors == Glorb.get_off_colors():
-        glorb.set_colors(Glorb.get_on_colors())
+    if glorb.colors == GLORB.get_off_colors():
+        glorb.set_colors(GLORB.get_on_colors())
     set_colors(glorb)
     set_light_button_on()
 
@@ -145,7 +145,7 @@ def set_light_button_on():
 
 
 def turn_off_light():
-    _set_colors(Glorb.get_off_colors(), geometry)
+    _set_colors(GLORB.get_off_colors(), geometry)
     light_on_event.clear()
     document.querySelector("#resetButton").textContent = "Turn on"
 
