@@ -2,31 +2,14 @@ from pyodide.ffi import to_js # type: ignore
 from js import console # type: ignore
 from js.THREE import Color, IcosahedronGeometry # type: ignore
 import js.THREE as THREE # type: ignore
-
-# _Color = tuple[int | float, int | float, int | float] | list[int | float]
-# Colors = list[_Color] | tuple[_Color, ...]
-
-
-# # Type alias for LEDMAP and FACEMAP to ensure that they are tuples of exactly 80 integers
-# Map = tuple[int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int]
-# PointValue = int | float
-# GeometryPoint = list[PointValue, PointValue, PointValue]
-# GeometryData = list[GeometryPoint]
-# _Color = tuple[PointValue, PointValue, PointValue] | list[PointValue]
-# Colors = list[_Color]
-
-Map = tuple[int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int]
-PointValue = int | float
-GeometryPoint = list[PointValue, PointValue, PointValue]
-GeometryData = list[GeometryPoint]
-RGBColor = tuple[PointValue, PointValue, PointValue] | list[PointValue]
-Colors = list[RGBColor]
-
+from gtypes import Color as RGBColor, Colors, IcosahedronGeometry, Vector3
+from __init__ import to_spherical
 
 from threejs import GLORBThreeJS as GLORB
+# from icosahedron import geometry
 
 
-def to_rgb(color) -> int | list[int | float] | tuple[float | int]:
+def to_rgb(color) -> int | RGBColor:
     """Normalise a color to RGB values between 0 and 1."""
     if isinstance(color, int):
         # Assume color is hexadcimal

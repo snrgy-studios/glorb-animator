@@ -9,6 +9,7 @@ from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
+from icosahedron import geometry
 from utils import GLORB, _set_colors, set_colors
 
 # from utils import GlorbThreeJs as Glorb, set_colors
@@ -32,7 +33,6 @@ scene.background = THREE.Color.new(0x263238)
 orbit = THREE.OrbitControls.new(camera, renderer.domElement)
 orbit.enableZoom = False
 
-geometry = THREE.IcosahedronGeometry.new(1, 1)
 perms = {
     "vertexColors": True,
 }

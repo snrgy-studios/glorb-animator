@@ -1,6 +1,7 @@
 from __init__ import GLORBBase, to_spherical
 from gtypes import BufferAttribute, Color, Colors, GeometryData, IcosahedronGeometry, PointValue, Vector3
 from js import THREE  # type: ignore
+from icosahedron import get_centroids, get_centroid_spherical
 
 
 class GLORBThreeJS(GLORBBase):
@@ -53,6 +54,20 @@ class GLORBThreeJS(GLORBBase):
     @update_rate.setter
     def update_rate(self, rate: int) -> int | None:
         self._update_rate = int(rate) if rate >= 10 else None
+
+    @property
+    def centroids(self) -> list['Vector3']:
+        return self._centroids
+
+    @property
+    def centroids_spherical(self) -> list['Vector3']:
+        return self._centroids_spherical
+
+    def get_centroid_spherical(self, index: int) -> 'Vector3':
+        return self._centroids_spherical[index]
+
+    def get_centroid(self, index: int) -> 'Vector3':
+        return self._centroids[index]
 
     @property
     def geometry(self) -> 'IcosahedronGeometry':
@@ -125,32 +140,3 @@ class GLORBThreeJS(GLORBBase):
     def reverse_index(cls, index: int, condition: bool) -> int:
         """Reverse the current index to go backwards."""
         return cls.NUM_FACES - index - 1 if condition else index
-
-    def get_vertices(self) -> list['Vector3']:
-        return [self.get_vertex(index) for index in range(self._geometry_position.count)]
-
-    def get_vertex(self, index: int) -> 'Vector3':
-        return list(THREE.Vector3.new().fromBufferAttribute(self._geometry_position, index))
-
-    def get_faces(self) -> list['Vector3']:
-        return [self.get_face(index) for index in range(0, self._geometry_position.count, 3)]
-
-    def get_face(self, index: int) -> 'Vector3':
-        return [self.get_vertices()[index + i] for i in range(3)]
-
-    def get_centroids(self) -> list['Vector3']:
-        return [self.get_centroid(index) for index in range(self.NUM_FACES)]
-
-    def get_centroid(self, face_index: list['Vector3']) -> 'Vector3':
-        """Calculate the centroid of a face."""
-        face = self.get_face(face_index)
-        x_sum = sum(vertex[0] for vertex in face)
-        y_sum = sum(vertex[1] for vertex in face)
-        z_sum = sum(vertex[2] for vertex in face)
-        num_vertices = len(face)
-        return x_sum / num_vertices, y_sum / num_vertices, z_sum / num_vertices
-
-    def get_centroid_sperical(self, face_index: list['Vector3']) -> 'Vector3':
-        """Calculate the centroid of a face in spherical coordinates."""
-        centroid = self.get_centroid(face_index)
-        return list(to_spherical(*centroid))

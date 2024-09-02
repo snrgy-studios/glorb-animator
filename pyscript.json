@@ -12,6 +12,7 @@
         "./utils.py": "utils.py",
         "./__init__.py": "__init__.py",
         "./gtypes.py": "gtypes.py",
+        "./icosahedron.py": "icosahedron.py",
         "./threejs.py": "threejs.py",
         "./threejs_stubs.pyi": "threejs_stubs.pyi"
     }
