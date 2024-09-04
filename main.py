@@ -181,6 +181,7 @@ async def run_code(event):
         def flush(self):
             ...
 
+    FUNC_NAME = "loop"
 
     # Redirect stdout to the custom stream
     sys.stdout = CapturePrintouts()
@@ -192,13 +193,13 @@ async def run_code(event):
         print("--- START EXECUTION ---")
         exec(code_string, namespace)
 
-        # Check if the 'update_pixels' function is defined in the user-provided code
+        # Check if the 'loop' function is defined in the user-provided code
         if FUNC_NAME not in namespace:
             print(f"Error:\n '{FUNC_NAME}' function not found in the provided code.")
             return
 
         # Get a reference to the 'update' function
-        update_pixels_func = namespace[FUNC_NAME]
+        loop_func = namespace[FUNC_NAME]
 
         # Call the 'update' function repeatedly
         i = 0
@@ -210,7 +211,7 @@ async def run_code(event):
             if pause_event.is_set():
                 await asyncio.sleep(0.001)  # Short sleep, omit to increment i
                 continue
-            glorb = update_pixels_func(i, glorb)
+            glorb = loop_func(i, glorb)
             set_colors(glorb)
             # renderer.render(scene, camera)
             await asyncio.sleep(

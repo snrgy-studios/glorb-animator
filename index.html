@@ -205,7 +205,11 @@
     <!-- Initialize CodeMirror -->
     <script>
         var boilerplateCode = `import random
-def update_pixels(i: int, glorb) -> str:
+
+from utils import GLORB
+
+
+def loop(frame_count: int, glorb: GLORB) -> str:
     colors = [[random.random() for _ in range(3)] for _ in range(80)]
     glorb.set_colors(colors)
     return glorb`;
