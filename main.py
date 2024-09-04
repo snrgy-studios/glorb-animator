@@ -90,6 +90,7 @@ def render(*args):
 
 render()
 
+
 stop_event = asyncio.Event()
 pause_event = asyncio.Event()
 light_on_event = asyncio.Event()
@@ -154,6 +155,22 @@ def reset_colors(event):
     toggle_light_button()
 
 
+# Define a custom stream that captures the output
+class CapturePrintouts:
+
+    def __init__(self) -> None:
+        self.printouts = document.querySelector("#printouts")
+        self.printouts_container = document.querySelector("#printouts-container2")
+
+    def write(self, text):
+        self.printouts.textContent += text
+        # auto-scroll to the bottom
+        self.printouts_container.scrollTop = self.printouts_container.scrollHeight
+
+    def flush(self):
+        ...
+
+
 async def run_code(event):
     global code_is_running
 
@@ -163,23 +180,6 @@ async def run_code(event):
     document.querySelector("#pauseButton").style.display = "inline-block"
 
     code_string = window.editor.getValue()
-
-    FUNC_NAME = "update_pixels"
-
-    # Define a custom stream that captures the output
-    class CapturePrintouts:
-
-        def __init__(self) -> None:
-            self.printouts = document.querySelector("#printouts")
-            self.printouts_container = document.querySelector("#printouts-container2")
-
-        def write(self, text):
-            self.printouts.textContent += text
-            # auto-scroll to the bottom
-            self.printouts_container.scrollTop = self.printouts_container.scrollHeight
-
-        def flush(self):
-            ...
 
     FUNC_NAME = "loop"
 
