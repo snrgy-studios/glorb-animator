@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from threejs_stubs import BufferAttribute, IcosahedronGeometry, Vector3
+    from glorb_utils.threejs_stubs import BufferAttribute, IcosahedronGeometry, Vector3
 else:
     # Use Any to indicate flexibility at runtime
     BufferAttribute = Any

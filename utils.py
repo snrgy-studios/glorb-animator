@@ -2,10 +2,10 @@ from pyodide.ffi import to_js # type: ignore
 from js import console # type: ignore
 from js.THREE import Color, IcosahedronGeometry # type: ignore
 import js.THREE as THREE # type: ignore
-from gtypes import Color as RGBColor, Colors, IcosahedronGeometry, Vector3
-from __init__ import to_spherical
+from glorb_utils.gtypes import Color as RGBColor, Colors, IcosahedronGeometry, Vector3
+from glorb_utils.glorb import to_spherical
 
-from threejs import GLORBThreeJS as GLORB
+from glorb_utils.threejs import GLORBThreeJS as GLORB
 # from icosahedron import geometry
 
 

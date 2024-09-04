@@ -9,7 +9,7 @@ from js import THREE, Float32Array, Object
 from pyodide.ffi import create_proxy, to_js
 from pyscript import document, window
 
-from icosahedron import geometry
+from glorb_utils.icosahedron import geometry
 from utils import GLORB, _set_colors, set_colors
 
 # from utils import GlorbThreeJs as Glorb, set_colors

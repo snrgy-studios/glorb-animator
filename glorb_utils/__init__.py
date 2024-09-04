@@ -1,1 +1,1 @@
-import glorb_utils.hello
+from glorb_utils.threejs import GLORBThreeJS as GLORB

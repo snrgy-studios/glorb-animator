@@ -1,7 +1,8 @@
-from __init__ import GLORBBase, to_spherical
-from gtypes import BufferAttribute, Color, Colors, GeometryData, IcosahedronGeometry, PointValue, Vector3
 from js import THREE  # type: ignore
-from icosahedron import get_centroids, get_centroid_spherical
+
+from glorb_utils.glorb import GLORBBase, to_spherical
+from glorb_utils.gtypes import BufferAttribute, Color, Colors, GeometryData, IcosahedronGeometry, PointValue, Vector3
+from glorb_utils.icosahedron import get_centroids, get_centroid_spherical
 
 
 class GLORBThreeJS(GLORBBase):
@@ -17,6 +18,10 @@ class GLORBThreeJS(GLORBBase):
         self._geometry = geometry
         self._geometry_position: 'BufferAttribute' = self._geometry.getAttribute('position')
         self._centroids = get_centroids()
+        # _centroids = get_centroids()
+        # self._centroids = []
+        # for face_index in range(self.NUM_FACES):
+        #     self._centroids.append(_centroids[self.FACEMAP[face_index]])
         self._centroids_spherical = [to_spherical(*centroid) for centroid in self._centroids]
 
     def __str__(self) -> str:
@@ -39,6 +44,10 @@ class GLORBThreeJS(GLORBBase):
         for i in range(cls.NUM_FACES):
             result[cls.FACEMAP[i]] = colors[i]
         return result
+
+    @classmethod
+    def get_colors_from_color(cls, *rgb: Color) -> Colors:
+        return [(*rgb,) for _ in range(cls.NUM_FACES)]
 
     def turn_off(self):
         self._colors = [[0, 0, 0] for _ in range(self.NUM_FACES)]

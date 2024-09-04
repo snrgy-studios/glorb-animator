@@ -9,11 +9,13 @@
         "scipy"
     ],
     "files": {
-        "./utils.py": "utils.py",
+        "./glorb_utils/__init__.py": "glorb_utils/__init__.py",
+        "./glorb_utils/glorb.py": "glorb_utils/glorb.py",
+        "./glorb_utils/gtypes.py": "glorb_utils/gtypes.py",
+        "./glorb_utils/icosahedron.py": "glorb_utils/icosahedron.py",
+        "./glorb_utils/threejs.py": "glorb_utils/threejs.py",
+        "./glorb_utils/threejs_stubs.pyi": "glorb_utils/threejs_stubs.pyi",
         "./__init__.py": "__init__.py",
-        "./gtypes.py": "gtypes.py",
-        "./icosahedron.py": "icosahedron.py",
-        "./threejs.py": "threejs.py",
-        "./threejs_stubs.pyi": "threejs_stubs.pyi"
+        "./utils.py": "utils.py"
     }
 }
